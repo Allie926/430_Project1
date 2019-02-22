@@ -31,7 +31,7 @@ const onRequest = (request, response) => {
       }
       break;
     case 'POST':
-      if (parsedUrl.pathname === '/addUser') {
+      if (parsedUrl.pathname === '/addChar') {
         const res = response;
         const body = [];
 

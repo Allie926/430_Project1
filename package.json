@@ -1,7 +1,7 @@
 {
-  "name": "http-api-assignment-ii",
+  "name": "project1",
   "version": "1.0.0",
-  "description": "http api homework assignment part 2",
+  "description": "rich media 2 project 1",
   "main": "index.js",
   "scripts": {
     "start": "node ./src/server.js",
