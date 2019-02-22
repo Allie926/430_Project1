@@ -49,6 +49,7 @@ const addChar = (request, response, body) => {
   chars[body.name].name = body.name;
   chars[body.name].level = body.level;
   chars[body.name].class = body.class;
+  chars[body.name].spells = {};
 
   if (responseCode === 201) {
     responseJSON.message = 'Created Successfully';

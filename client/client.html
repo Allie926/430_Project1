@@ -5,6 +5,8 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
+    let char;
+
     const parseJSON = (xhr, content) => {
       const obj = JSON.parse(xhr.response);
       console.dir(obj);
@@ -66,7 +68,9 @@
         xhr.onload = () => handleResponse(xhr, false);
       }
       
-      xhr.send();
+      const nameField = document.querySelector('#nameField2');
+      const formData = `name=${nameField.value}`;
+      xhr.send(formData);
       
       e.preventDefault();
       return false;
@@ -102,11 +106,14 @@
       const getForm = document.querySelector('#getForm');
       
       const getChars = (e) => requestUpdate(e, getForm);
+      
+      const spellForm = document.querySelector('#character');
+      
+      const addSpell = (e) => sendPost(e, spellForm);
 	  
       charForm.addEventListener('submit', addChar);
       getForm.addEventListener('submit', getChars);
-      
-      //autocomplete(document.getElementById("myInput"), countries);
+      spellForm.addEventListener('submit', addSpell);
     };
 
     window.onload = init;
@@ -143,5 +150,13 @@
   </section>
   <section id="content">
   </section>
+  <form id="character">
+    <p id="charName">No Character Selected</p>
+    <ul id="spells">
+    </ul>
+    <label for="spell">Spell: </label>
+    <input id="spellField" type="text" name="spell" />
+    <input type="submit" value="Add Spell" />
+  </form>
 </body>
 </html>
