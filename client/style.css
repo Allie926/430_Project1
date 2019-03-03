@@ -19,3 +19,8 @@ html, body {
   font-size: 2em;
   text-align: center;
 }
+
+span {
+    display:inline-block;
+	width:33%;
+}

@@ -8,7 +8,6 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
-
   switch (request.method) {
     case 'GET':
       if (parsedUrl.pathname === '/') {
@@ -17,8 +16,6 @@ const onRequest = (request, response) => {
         htmlHandler.getCSS(request, response);
       } else if (parsedUrl.pathname === '/getChars') {
         responseHandler.getChars(request, response);
-      } else if (parsedUrl.pathname === '/notReal') {
-        responseHandler.notReal(request, response);
       } else {
         responseHandler.notReal(request, response);
       }
@@ -52,12 +49,14 @@ const onRequest = (request, response) => {
           responseHandler.addChar(request, res, bodyParams);
         });
       }
+
       break;
     default:
       responseHandler.notReal(request, response);
   }
 };
 
+// start HTTP server
 http.createServer(onRequest).listen(port);
 
 console.log(`Listening on 127.0.0.1: ${port}`);

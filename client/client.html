@@ -1,51 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Our simple HTTP server</title>
+  <title>ItemCreator</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
-    let char;
-
     const parseJSON = (xhr, content) => {
       const obj = JSON.parse(xhr.response);
-      console.dir(obj);
-      
-      if(obj.message) {
-        const p = document.createElement('p');
-        p.textContent = `Message: ${obj.message}`;
-        content.appendChild(p);
-      }
-      
+	  //console.dir(obj);
       if(obj.chars) {
-        const charList = document.createElement('p');
-        const chars = JSON.stringify(obj.chars);
-        charList.textContent = chars;
-        content.appendChild(charList);
+	    console.dir(obj);
+		content.innerHTML = "";
+		let charList = [];
+		for(let i=0;i<Object.getOwnPropertyNames(obj.chars).length; i++)
+		{
+		  
+		  charList.push(Object.getOwnPropertyNames(obj.chars)[i]);
+		  const span = document.createElement('span');
+		  let key = charList[i];
+		  
+		  const name = document.createElement('h5');
+		  name.innerHTML = obj.chars[key].name;
+		  span.appendChild(name);
+		  const level = document.createElement('p');
+		  level.innerHTML = obj.chars[key].level;
+		  span.appendChild(level);
+		  const charClass = document.createElement('p');
+		  charClass.innerHTML = obj.chars[key].class;
+		  span.appendChild(charClass);
+		  const spells = document.createElement('p');
+		  spells.innerHTML = obj.chars[key].spells;
+		  span.appendChild(spells);
+		  
+		  content.appendChild(span);
+		}
       }
     };
-
     const handleResponse = (xhr,parseResponse) => {
       const content = document.querySelector('#content');
-      
       switch(xhr.status) {
         case 200: //success
-          content.innerHTML = `<b>Success</b>`;
+          //content.innerHTML = `<b>Success</b>`;
           break;
         case 201: //created
-          content.innerHTML = '<b>Created</b>';
+          //content.innerHTML = '<b>Item created</b>';
           break;
         case 204: //updated (no response back from server)
-          content.innerHTML = '<b>Updated (No Content)</b>';
+          //content.innerHTML = '<b>Updated the item</b>';
           return;
         case 400: //bad request
-          content.innerHTML = `<b>Bad Request</b>`;
+          //content.innerHTML = `<b>Bad Request: please fill in all fields</b>`;
           break;
         default: //any other status code
-          content.innerHTML = `<b>Resource Not Found</b>`;
+          //content.innerHTML = `<b>Resource Not Found</b>`;
           break;
       }
-      
       //if we are expecting a response body (not in a head request)
       if(parseResponse) {
 		parseJSON(xhr,content);
@@ -53,45 +63,46 @@
 	  
     };
 
-    const requestUpdate = (e, getForm) => {
+    const requestUpdate = (e, userForm) => {
       const url = '/getChars';
-      const method = 'get';
+      const method = 'GET';
       
       const xhr = new XMLHttpRequest();
       xhr.open(method, url);
       xhr.setRequestHeader('Accept', 'application/json');
-      
-      if(method == 'get') {
+      if(method == 'GET') {
         xhr.onload = () => handleResponse(xhr, true);
-      } 
-      else {
+      } else {
         xhr.onload = () => handleResponse(xhr, false);
       }
       
-      const nameField = document.querySelector('#nameField2');
-      const formData = `name=${nameField.value}`;
-      xhr.send(formData);
+      xhr.send();
       
       e.preventDefault();
+	  
+	  
       return false;
     };
 
-    const sendPost = (e, charForm) => {
-      const charAction = charForm.getAttribute('action');
-      const charMethod = charForm.getAttribute('method');
+    const sendPost = (e, nameForm) => {
+	  const content = document.querySelector('#content');
+	  content.innerHTLM="";
+      const nameAction = nameForm.getAttribute('action');
+      const nameMethod = nameForm.getAttribute('method');
       
-      const nameField = charForm.querySelector('#nameField');
-      const levelField = charForm.querySelector('#levelField');
-      const classField = charForm.querySelector('#classField');
+      const nameField = nameForm.querySelector('#nameField');
+	  const levelSelect = nameForm.querySelector('#levelSelect');
+      const classSelect = nameForm.querySelector('#classSelect');
       
       const xhr = new XMLHttpRequest();
-      xhr.open(charMethod, charAction);
+      xhr.open(nameMethod, nameAction);
+      
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xhr.setRequestHeader ('Accept', 'application/json');
       
       xhr.onload = () => handleResponse(xhr,true);
       
-      const formData = `name=${nameField.value}&level=${levelField.value}&class=${classField.value}`;
+      const formData = `name=${nameField.value}&level=${levelSelect.value}&class=${classSelect.value}&spells=${['None']}`;
       xhr.send(formData);
 	  
       e.preventDefault();
@@ -99,21 +110,16 @@
     };
 	
     const init = () => {
-      const charForm = document.querySelector('#charForm');
+      const nameForm = document.querySelector('#nameForm');
       
-      const addChar = (e) => sendPost(e, charForm);
+      const addChar = (e) => sendPost(e, nameForm);
       
-      const getForm = document.querySelector('#getForm');
+      const charForm = document.querySelector('#getChar');
       
-      const getChars = (e) => requestUpdate(e, getForm);
-      
-      const spellForm = document.querySelector('#character');
-      
-      const addSpell = (e) => sendPost(e, spellForm);
+      const getChars = (e) => requestUpdate(e, charForm);
 	  
-      charForm.addEventListener('submit', addChar);
-      getForm.addEventListener('submit', getChars);
-      spellForm.addEventListener('submit', addSpell);
+      nameForm.addEventListener('submit', addChar);
+      charForm.addEventListener('submit', getChars);
     };
 
     window.onload = init;
@@ -121,42 +127,60 @@
 </head>
 <body>
   <section id="top">
-    <h3>POST Status Code Tests</h3>
-    <form id="charForm" action="/addChar" method="post">
+    <h3>Spellcaster Creator</h3>
+    <form id="nameForm" action="/addChar" method="post">
       <label for="name">Name: </label>
-      <input id="nameField" type="text" name="name" />
+      <input id="nameField" type="text" name="name"/>
       <label for="level">Level: </label>
-      <input id="levelField" type="number" name="level" min="1" max="20" step="1"/>
-	  <label for="class">Class: </label>
-	  <select id="classField" name="class">
-		<option value="arcane trickster">Arcane Trickster</option>
-		<option value="bard">Bard</option>
-		<option value="cleric">Cleric</option>
-		<option value="druid">Druid</option>
-		<option value="eldritch knight">Eldritch Knight</option>
-		<option value="paladin">Paladin</option>
-		<option value="ranger">Ranger</option>
-		<option value="sorcerer">Sorcerer</option>
-		<option value="warlock">Warlock</option>
-		<option value="wizard">Wizard</option>
-	  </select>
-      <input type="submit" value="Create Character" />
+      <select id="levelSelect" name="level">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+      </select>
+      <label for="class">Class: </label>
+	  <select id="classSelect" name="class">
+        <option value="Arcane Trickster">Arcane Trickster</option>
+        <option value="Bard">Bard</option>
+        <option value="Cleric">Cleric</option>
+        <option value="Druid">Druid</option>
+        <option value="Eldritch Knight">Eldritch Knight</option>
+        <option value="Paladin">Paladin</option>
+        <option value="Ranger">Ranger</option>
+        <option value="Sorcerer">Sorcerer</option>
+        <option value="Warlock">Warlock</option>
+        <option value="Wizard">Wizard</option>
+      </select>
+      <input type="submit" value="Add Character"/>
     </form>
-    <form id="getForm" action="/getChars" method="get">
-      <label for="name2">Name: </label>
-      <input id="nameField2" type="text" name="name2" />
-      <input type="submit" value="Get Characters" />
+    <form>
+      <label for="spell">Spell: </label>
+      <input id="spellField" type="text" name="spell"/>
+      <input type="submit" value="AddSpell"/>
+    </form>
+	<form id="getChar" action="/getChars" method="get">
+      <input type="submit" value="Get Characters"/>
     </form>
   </section>
   <section id="content">
   </section>
-  <form id="character">
-    <p id="charName">No Character Selected</p>
-    <ul id="spells">
-    </ul>
-    <label for="spell">Spell: </label>
-    <input id="spellField" type="text" name="spell" />
-    <input type="submit" value="Add Spell" />
-  </form>
+  <section id="filledcontent">
+  </section>
 </body>
 </html>

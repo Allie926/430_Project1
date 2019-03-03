@@ -1,7 +1,7 @@
 {
-  "name": "project1",
+  "name": "itemcreator",
   "version": "1.0.0",
-  "description": "rich media 2 project 1",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node ./src/server.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cql3842/http-api-assignment-ii.git"
+    "url": "git+https://github.com/cql3842/ItemCreator.git"
   },
-  "author": "Allie Sangalli",
+  "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/cql3842/http-api-assignment-ii/issues"
+    "url": "https://github.com/cql3842/ItemCreator/issues"
   },
-  "homepage": "https://github.com/cql3842/http-api-assignment-ii#readme",
+  "homepage": "https://github.com/cql3842/ItemCreator#readme",
   "devDependencies": {
     "eslint": "^5.14.1",
     "eslint-config-airbnb": "^17.1.0",
