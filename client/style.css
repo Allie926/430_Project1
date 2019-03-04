@@ -3,6 +3,7 @@ html, body {
   width: 100%;
   margin: 0;
   padding: 0;
+  font-family: 'Philosopher', sans-serif;
 }
 
 #top {
@@ -21,6 +22,26 @@ html, body {
 }
 
 span {
-    display:inline-block;
-	width:33%;
+  display:inline-block;
+  width:30%;
+  border:2px solid black;
+  vertical-align: text-top;
+  font-size:.75em;
+}
+
+#instructions {
+  width: 40%;
+  margin-left:30%;
+}
+
+#char {
+  margin-top: 20px;
+}
+
+#spells {
+  padding-top: 20px;
+}
+
+#character {
+  padding-top: 20px;
 }

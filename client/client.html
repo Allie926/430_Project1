@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>ItemCreator</title>
+  <title>Spellcaster Creator</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
-  
+  <link href="https://fonts.googleapis.com/css?family=Philosopher:400,700" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
     const parseJSON = (xhr, content) => {
       const obj = JSON.parse(xhr.response);
-	  //console.dir(obj);
       if(obj.chars) {
 	    console.dir(obj);
 		content.innerHTML = "";
@@ -20,17 +19,25 @@
 		  const span = document.createElement('span');
 		  let key = charList[i];
 		  
-		  const name = document.createElement('h5');
-		  name.innerHTML = obj.chars[key].name;
+		  const name = document.createElement('h3');
+		  name.innerHTML = obj.chars[key].name.charAt(0).toUpperCase() + obj.chars[key].name.slice(1);
 		  span.appendChild(name);
 		  const level = document.createElement('p');
-		  level.innerHTML = obj.chars[key].level;
+		  level.innerHTML = "Level: " + obj.chars[key].level;
 		  span.appendChild(level);
 		  const charClass = document.createElement('p');
-		  charClass.innerHTML = obj.chars[key].class;
+		  charClass.innerHTML = "Class: " + obj.chars[key].class;
 		  span.appendChild(charClass);
+          const spell = document.createElement('p');
+		  spell.innerHTML = "Spells: ";
+          span.appendChild(spell);
 		  const spells = document.createElement('p');
-		  spells.innerHTML = obj.chars[key].spells;
+          for(let i = 0; i < obj.chars[key].spells.length; i++){
+            if(i == 0)
+              spells.innerHTML = obj.chars[key].spells[i].charAt(0).toUpperCase() + obj.chars[key].spells[i].slice(1);
+            else
+              spells.innerHTML += ", " + obj.chars[key].spells[i].charAt(0).toUpperCase() + obj.chars[key].spells[i].slice(1);
+          }
 		  span.appendChild(spells);
 		  
 		  content.appendChild(span);
@@ -102,7 +109,32 @@
       
       xhr.onload = () => handleResponse(xhr,true);
       
-      const formData = `name=${nameField.value}&level=${levelSelect.value}&class=${classSelect.value}&spells=${['None']}`;
+      const arr = [];
+      const formData = `name=${nameField.value.toLowerCase()}&level=${levelSelect.value}&class=${classSelect.value}&spells=${arr}`;
+      xhr.send(formData);
+	  
+      e.preventDefault();
+      return false;
+    };
+
+    const sendPost2 = (e, nameForm) => {
+	  const content = document.querySelector('#content');
+	  content.innerHTLM="";
+      const nameAction = nameForm.getAttribute('action');
+      const nameMethod = nameForm.getAttribute('method');
+      
+      const nameField = nameForm.querySelector('#nameField');
+      const spellField = nameForm.querySelector('#spellField');
+      
+      const xhr = new XMLHttpRequest();
+      xhr.open(nameMethod, nameAction);
+      
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader ('Accept', 'application/json');
+      
+      xhr.onload = () => handleResponse(xhr,true);
+      
+      const formData = `name=${nameField.value.toLowerCase()}&spell=${spellField.value}`;
       xhr.send(formData);
 	  
       e.preventDefault();
@@ -114,11 +146,16 @@
       
       const addChar = (e) => sendPost(e, nameForm);
       
+      const spellForm = document.querySelector('#spellForm');
+      
+      const addSpell = (e) => sendPost2(e, spellForm);
+      
       const charForm = document.querySelector('#getChar');
       
       const getChars = (e) => requestUpdate(e, charForm);
 	  
       nameForm.addEventListener('submit', addChar);
+      spellForm.addEventListener('submit', addSpell);
       charForm.addEventListener('submit', getChars);
     };
 
@@ -127,60 +164,72 @@
 </head>
 <body>
   <section id="top">
-    <h3>Spellcaster Creator</h3>
-    <form id="nameForm" action="/addChar" method="post">
-      <label for="name">Name: </label>
-      <input id="nameField" type="text" name="name"/>
-      <label for="level">Level: </label>
-      <select id="levelSelect" name="level">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-        <option value="11">11</option>
-        <option value="12">12</option>
-        <option value="13">13</option>
-        <option value="14">14</option>
-        <option value="15">15</option>
-        <option value="16">16</option>
-        <option value="17">17</option>
-        <option value="18">18</option>
-        <option value="19">19</option>
-        <option value="20">20</option>
-      </select>
-      <label for="class">Class: </label>
-	  <select id="classSelect" name="class">
-        <option value="Arcane Trickster">Arcane Trickster</option>
-        <option value="Bard">Bard</option>
-        <option value="Cleric">Cleric</option>
-        <option value="Druid">Druid</option>
-        <option value="Eldritch Knight">Eldritch Knight</option>
-        <option value="Paladin">Paladin</option>
-        <option value="Ranger">Ranger</option>
-        <option value="Sorcerer">Sorcerer</option>
-        <option value="Warlock">Warlock</option>
-        <option value="Wizard">Wizard</option>
-      </select>
-      <input type="submit" value="Add Character"/>
-    </form>
-    <form>
-      <label for="spell">Spell: </label>
-      <input id="spellField" type="text" name="spell"/>
-      <input type="submit" value="AddSpell"/>
-    </form>
-	<form id="getChar" action="/getChars" method="get">
-      <input type="submit" value="Get Characters"/>
-    </form>
+    <h2>Spellcaster Creator</h2>
+    <section id="instructions">
+      <p>Instructions:</p>
+      <p>Create a character. Enter a name, level, and class and click 'Add Character' to create your character. Then, enter the character's name and click 'Add Spell' to add that spell to that character. Click 'Get characters' to display a list of all stored characters.</p>
+    </section>
+    <section id="char">
+      <label for="#nameForm">Create a character: </label>
+      <form id="nameForm" action="/addChar" method="post">
+        <label for="name">Name: </label>
+        <input id="nameField" type="text" name="name"/>
+        <label for="level">Level: </label>
+        <select id="levelSelect" name="level">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18">18</option>
+          <option value="19">19</option>
+          <option value="20">20</option>
+        </select>
+        <label for="class">Class: </label>
+        <select id="classSelect" name="class">
+          <option value="Arcane Trickster">Arcane Trickster</option>
+          <option value="Bard">Bard</option>
+          <option value="Cleric">Cleric</option>
+          <option value="Druid">Druid</option>
+          <option value="Eldritch Knight">Eldritch Knight</option>
+          <option value="Paladin">Paladin</option>
+          <option value="Ranger">Ranger</option>
+          <option value="Sorcerer">Sorcerer</option>
+          <option value="Warlock">Warlock</option>
+          <option value="Wizard">Wizard</option>
+        </select>
+        <input type="submit" value="Add Character"/>
+      </form>
+    </section>
+    <section id="spells">
+      <label for="#spellForm">Add Spells: </label>
+      <form id="spellForm" action="/addSpell" method="post">
+        <label for="name">Name: </label>
+        <input id="nameField" type="text" name="name"/>
+        <label for="spell">Spell: </label>
+        <input id="spellField" type="text" name="spell"/>
+        <input type="submit" value="Add Spell"/>
+      </form>
+    </section>
+    <section id="character">
+      <form id="getChar" action="/getChars" method="get">
+        <input type="submit" value="Get Characters"/>
+      </form>
+    </section>
   </section>
   <section id="content">
-  </section>
-  <section id="filledcontent">
   </section>
 </body>
 </html>

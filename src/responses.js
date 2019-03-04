@@ -44,6 +44,7 @@ const addChar = (request, response, body) => {
 
   if (chars[body.name]) {
     responseCode = 204;
+    
   } else {
     chars[body.name] = {};
   }
@@ -51,7 +52,7 @@ const addChar = (request, response, body) => {
   chars[body.name].name = body.name;
   chars[body.name].level = body.level;
   chars[body.name].class = body.class;
-  chars[body.name].spells = body.spells;
+  chars[body.name].spells = body.spells.split(',');
 
   if (responseCode === 201) {
     responseJSON.message = 'Character Created Successfully';
@@ -59,6 +60,29 @@ const addChar = (request, response, body) => {
   }
   return respondJSONMeta(request, response, responseCode);
 };
+
+const addSpell = (request, response, body) => {
+  const responseJSON = {
+    message: 'Please fill in all fields.'
+  };
+  
+  if(!body.name) {
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+  
+  let responseCode = 204;
+  
+  if(chars[body.name]){
+    if(chars[body.name].spells[0] == "")
+      chars[body.name].spells[0] = body.spell;
+    else
+      chars[body.name].spells.push(body.spell);
+  }
+  
+  responseJSON.message = 'Spell Added Successfully';
+  return respondJSON(request, response, responseCode, responseJSON);
+}
 
 const notReal = (request, response) => {
   const responseJSON = {
@@ -78,4 +102,5 @@ module.exports = {
   notReal,
   notRealMeta,
   addChar,
+  addSpell,
 };
