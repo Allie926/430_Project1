@@ -55,13 +55,13 @@ const addChar = (request, response, body) => {
     responseCode = 204;
   } else { //if character name does not exist, create new character object
     chars[body.name] = {};
+    chars[body.name].spells = body.spells.split(',');
   }
 
   //set all values of character object
   chars[body.name].name = body.name;
   chars[body.name].level = body.level;
   chars[body.name].class = body.class;
-  chars[body.name].spells = body.spells.split(',');
 
   //if created new character, respond with 201
   if (responseCode === 201) {
