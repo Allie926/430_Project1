@@ -33,6 +33,7 @@ const onRequest = (request, response) => {
         const body = [];
 
         request.on('error', (err) => {
+          console.dir(err);
           res.statusCode = 400;
           res.end();
         });
@@ -52,7 +53,7 @@ const onRequest = (request, response) => {
         const body = [];
         
         request.on('error', (err) => {
-          //console.dir(err);
+          console.dir(err);
           res.statusCode = 400;
           res.end();
         });
