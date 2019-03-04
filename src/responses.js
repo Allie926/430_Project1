@@ -52,9 +52,7 @@ const addChar = (request, response, body) => {
   //if character name already exists, change response code to 204 updated
   if (chars[body.name]) {
     responseCode = 204;
-  } 
-  //if character name does not exist, create new character object
-  else {
+  } else { //if character name does not exist, create new character object
     chars[body.name] = {};
   }
 
