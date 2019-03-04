@@ -4,11 +4,20 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: 'Philosopher', sans-serif;
+  /*background-image: url("https://backgroundcheckall.com/wp-content/uploads/2017/12/repeating-star-background-5.jpg");*/
+  background-image: url("https://us.123rf.com/450wm/sudowoodo/sudowoodo1606/sudowoodo160600022/58942497-seamless-star-pattern-tillable-texture-golden-stars-on-black-background-.jpg?ver=6");
+  /*background-color: #eee8dc;*/
+  color: white;
 }
 
 #top {
   text-align: center;
   margin: 0 auto;
+  background-color: rgba(220,220,220,.1);
+  border: 2px solid white;
+  width: 92.5%;
+  margin-left:3.75%;
+  margin-top: 3.75%;
 }
 
 #top h1 {
@@ -16,32 +25,70 @@ html, body {
 }
 
 #content {
-  margin-top: 100px;
+  margin-top: 25px;
   font-size: 2em;
   text-align: center;
+}
+
+b{
+  font-size:1.25em;
+}
+
+label{
+  margin-left: .5em;
+}
+
+form{
+  margin-top:.25em;
+}
+
+.button{
+  background-color: #dcdcdc;
+  margin-left: .25em;
+}
+
+#getButton{
+  padding:.5em;
+  padding-left: .75em;
+  padding-right: .75em;
 }
 
 span {
   display:inline-block;
   width:30%;
-  border:2px solid black;
+  border:2px solid white;
   vertical-align: text-top;
   font-size:.75em;
+  margin: 5px;
+  background-color: rgba(220,220,220,.1);
+}
+
+h2{
+  font-size:2.5em;
+}
+
+select, input{
+  font-family: 'Philosopher', sans-serif;
+  font-size:.9em;
 }
 
 #instructions {
-  width: 40%;
-  margin-left:30%;
+  width: 50%;
+  margin-left:25%;
+  font-size:1.1em;
 }
 
 #char {
   margin-top: 20px;
+  font-size:1.1em;
 }
 
 #spells {
   padding-top: 20px;
+  font-size:1.1em;
 }
 
 #character {
   padding-top: 20px;
+  font-size:1.1em;
 }

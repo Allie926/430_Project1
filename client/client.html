@@ -9,8 +9,9 @@
     const parseJSON = (xhr, content) => {
       const obj = JSON.parse(xhr.response);
       if(obj.chars) {
-	    console.dir(obj);
+	    //console.dir(obj);
 		content.innerHTML = "";
+        
 		let charList = [];
 		for(let i=0;i<Object.getOwnPropertyNames(obj.chars).length; i++)
 		{
@@ -22,15 +23,19 @@
 		  const name = document.createElement('h3');
 		  name.innerHTML = obj.chars[key].name.charAt(0).toUpperCase() + obj.chars[key].name.slice(1);
 		  span.appendChild(name);
+          
 		  const level = document.createElement('p');
 		  level.innerHTML = "Level: " + obj.chars[key].level;
 		  span.appendChild(level);
+          
 		  const charClass = document.createElement('p');
 		  charClass.innerHTML = "Class: " + obj.chars[key].class;
 		  span.appendChild(charClass);
+          
           const spell = document.createElement('p');
 		  spell.innerHTML = "Spells: ";
           span.appendChild(spell);
+          
 		  const spells = document.createElement('p');
           for(let i = 0; i < obj.chars[key].spells.length; i++){
             if(i == 0)
@@ -44,30 +49,37 @@
 		}
       }
     };
+
     const handleResponse = (xhr,parseResponse) => {
       const content = document.querySelector('#content');
-      switch(xhr.status) {
-        case 200: //success
-          //content.innerHTML = `<b>Success</b>`;
+      
+      const response = document.querySelector('#response');
+      response.innerHTML = "&nbsp;";
+      switch(xhr.status){
+        case 200:
+          response.innerHTML = "&nbsp;";
           break;
-        case 201: //created
-          //content.innerHTML = '<b>Item created</b>';
+        case 201:
+          response.innerHTML = "Character Added";
           break;
-        case 204: //updated (no response back from server)
-          //content.innerHTML = '<b>Updated the item</b>';
-          return;
-        case 400: //bad request
-          //content.innerHTML = `<b>Bad Request: please fill in all fields</b>`;
+        case 204:
+          response.innerHTML = "Character Updated";
           break;
-        default: //any other status code
-          //content.innerHTML = `<b>Resource Not Found</b>`;
+        case 400:
+          if(JSON.parse(xhr.response).id == 'wrongChar')
+            response.innerHTML = "Character does not exist";
+          else
+            response.innerHTML = "Please fill out all fields";
+          break;
+        default:
+          response.innerHTML = "Resource Not Found";
           break;
       }
+      
       //if we are expecting a response body (not in a head request)
       if(parseResponse) {
 		parseJSON(xhr,content);
       }
-	  
     };
 
     const requestUpdate = (e, userForm) => {
@@ -86,8 +98,7 @@
       xhr.send();
       
       e.preventDefault();
-	  
-	  
+
       return false;
     };
 
@@ -107,7 +118,7 @@
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xhr.setRequestHeader ('Accept', 'application/json');
       
-      xhr.onload = () => handleResponse(xhr,true);
+      xhr.onload = () => handleResponse(xhr,false);
       
       const arr = [];
       const formData = `name=${nameField.value.toLowerCase()}&level=${levelSelect.value}&class=${classSelect.value}&spells=${arr}`;
@@ -132,7 +143,7 @@
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xhr.setRequestHeader ('Accept', 'application/json');
       
-      xhr.onload = () => handleResponse(xhr,true);
+      xhr.onload = () => handleResponse(xhr,false);
       
       const formData = `name=${nameField.value.toLowerCase()}&spell=${spellField.value}`;
       xhr.send(formData);
@@ -166,7 +177,7 @@
   <section id="top">
     <h2>Spellcaster Creator</h2>
     <section id="instructions">
-      <p>Instructions:</p>
+      <b>Instructions:</b>
       <p>Create a character. Enter a name, level, and class and click 'Add Character' to create your character. Then, enter the character's name and click 'Add Spell' to add that spell to that character. Click 'Get characters' to display a list of all stored characters.</p>
     </section>
     <section id="char">
@@ -210,7 +221,7 @@
           <option value="Warlock">Warlock</option>
           <option value="Wizard">Wizard</option>
         </select>
-        <input type="submit" value="Add Character"/>
+        <input class="button" type="submit" value="Add Character"/>
       </form>
     </section>
     <section id="spells">
@@ -220,13 +231,16 @@
         <input id="nameField" type="text" name="name"/>
         <label for="spell">Spell: </label>
         <input id="spellField" type="text" name="spell"/>
-        <input type="submit" value="Add Spell"/>
+        <input class="button" type="submit" value="Add Spell"/>
       </form>
     </section>
     <section id="character">
       <form id="getChar" action="/getChars" method="get">
-        <input type="submit" value="Get Characters"/>
+        <input class="button" id="getButton" type="submit" value="Get Characters"/>
       </form>
+    </section>
+    <section>
+      <p id="response">&nbsp;</p>
     </section>
   </section>
   <section id="content">
