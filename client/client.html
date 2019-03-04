@@ -6,36 +6,46 @@
   <link href="https://fonts.googleapis.com/css?family=Philosopher:400,700" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
+    //parse json response
     const parseJSON = (xhr, content) => {
+      //parse response
       const obj = JSON.parse(xhr.response);
+      
+      //if the characters array exists
       if(obj.chars) {
 	    //console.dir(obj);
 		content.innerHTML = "";
         
+        //create span elements for each character
 		let charList = [];
 		for(let i=0;i<Object.getOwnPropertyNames(obj.chars).length; i++)
 		{
-		  
+		  //create the general span
 		  charList.push(Object.getOwnPropertyNames(obj.chars)[i]);
 		  const span = document.createElement('span');
 		  let key = charList[i];
 		  
+          //create the header with character's name
 		  const name = document.createElement('h3');
 		  name.innerHTML = obj.chars[key].name.charAt(0).toUpperCase() + obj.chars[key].name.slice(1);
 		  span.appendChild(name);
           
+          //create paragraph with character's level
 		  const level = document.createElement('p');
 		  level.innerHTML = "Level: " + obj.chars[key].level;
 		  span.appendChild(level);
           
+          //create paragraph with character's class
 		  const charClass = document.createElement('p');
 		  charClass.innerHTML = "Class: " + obj.chars[key].class;
 		  span.appendChild(charClass);
           
+          //create paragraph with spell header
           const spell = document.createElement('p');
 		  spell.innerHTML = "Spells: ";
           span.appendChild(spell);
           
+          //create paragraph with each spell
 		  const spells = document.createElement('p');
           for(let i = 0; i < obj.chars[key].spells.length; i++){
             if(i == 0)
@@ -45,43 +55,57 @@
           }
 		  span.appendChild(spells);
 		  
+          //append span to content
 		  content.appendChild(span);
 		}
       }
     };
 
+    //handle responses from the server
     const handleResponse = (xhr,parseResponse) => {
       const content = document.querySelector('#content');
       
+      //handle response message based on response code
       const response = document.querySelector('#response');
       response.innerHTML = "&nbsp;";
       switch(xhr.status){
+        //200 code, success, when getting characters
         case 200:
           response.innerHTML = "&nbsp;";
           break;
+        //201 code, added, when creating a new character
         case 201:
           response.innerHTML = "Character Added";
           break;
+        //204 code, updated, when modifying an existing character
         case 204:
           response.innerHTML = "Character Updated";
           break;
+        //400 code, error, when attemtping to add spell to non-existent character or when all fields are not filled
         case 400:
+          //if character doesn't exist, set that message
           if(JSON.parse(xhr.response).id == 'wrongChar')
             response.innerHTML = "Character does not exist";
+          //if character does exist, user didn't fill out all fields
           else
             response.innerHTML = "Please fill out all fields";
           break;
+        //404 code, not found, show resource not found
+        case 404:
+          response.innerHTML = "Resource Not Found";
+        //all other cases, show resource not found
         default:
           response.innerHTML = "Resource Not Found";
           break;
       }
       
-      //if we are expecting a response body (not in a head request)
+      //if expecting a response body (not in a head request)
       if(parseResponse) {
 		parseJSON(xhr,content);
       }
     };
 
+    //request update for get requests
     const requestUpdate = (e, userForm) => {
       const url = '/getChars';
       const method = 'GET';
@@ -102,6 +126,7 @@
       return false;
     };
 
+    //send post for adding a character
     const sendPost = (e, nameForm) => {
 	  const content = document.querySelector('#content');
 	  content.innerHTLM="";
@@ -120,6 +145,7 @@
       
       xhr.onload = () => handleResponse(xhr,false);
       
+      //send in character name, level, class, and empty array of spells
       const arr = [];
       const formData = `name=${nameField.value.toLowerCase()}&level=${levelSelect.value}&class=${classSelect.value}&spells=${arr}`;
       xhr.send(formData);
@@ -128,6 +154,7 @@
       return false;
     };
 
+    //send post for adding a spell
     const sendPost2 = (e, nameForm) => {
 	  const content = document.querySelector('#content');
 	  content.innerHTLM="";
@@ -145,6 +172,7 @@
       
       xhr.onload = () => handleResponse(xhr,false);
       
+      //send in character name and spell
       const formData = `name=${nameField.value.toLowerCase()}&spell=${spellField.value}`;
       xhr.send(formData);
 	  
@@ -152,6 +180,7 @@
       return false;
     };
 	
+    //init the forms and buttons
     const init = () => {
       const nameForm = document.querySelector('#nameForm');
       

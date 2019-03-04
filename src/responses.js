@@ -36,6 +36,7 @@ const getCharsMeta = (request, response) => {
 
 //post request for adding characters
 const addChar = (request, response, body) => {
+  //default response message
   const responseJSON = {
     message: 'Please fill in all fields.',
   };
@@ -75,6 +76,7 @@ const addChar = (request, response, body) => {
 
 //post request for adding spells to a character
 const addSpell = (request, response, body) => {
+  //default response message
   const responseJSON = {
     message: 'Please fill in all fields.',
   };
@@ -91,13 +93,14 @@ const addSpell = (request, response, body) => {
     return respondJSON(request, response, 400, responseJSON);
   }
   
+  //if first spell added, get rid of the empty element
   if(chars[body.name].spells[0] === ""){
     chars[body.name].spells[0] = body.spell;
-  }
-  else{
+  } else{ //if not first spell, push element to the spells array
     chars[body.name].spells.push(body.spell);
   }
     
+  //update message and return
   responseJSON.message = 'Spell Added';
   return respondJSON(request, response, 204, responseJSON);
 };
