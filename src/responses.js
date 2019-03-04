@@ -74,7 +74,7 @@ const addSpell = (request, response, body) => {
   let responseCode = 204;
   
   if(chars[body.name]){
-    if(chars[body.name].spells[0] == "")
+    if(chars[body.name].spells[0] === "")
       chars[body.name].spells[0] = body.spell;
     else
       chars[body.name].spells.push(body.spell);
